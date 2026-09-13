@@ -1,0 +1,3 @@
+IndexNumber,FullName,OfficialEmail,FacultyCode,IntakeYear,IsActive
+CST2026001,Sample Student,student001@campus.local,CST,2026,true
+CST2026002,Second Student,student002@campus.local,CST,2026,true

@@ -1,0 +1,35 @@
+@CampusService_HostAddress = http://localhost:5280
+@AdminToken = REPLACE_WITH_ADMIN_JWT
+@StudentToken = REPLACE_WITH_STUDENT_JWT
+
+### Public/read endpoint - labs
+GET {{CampusService_HostAddress}}/api/labs
+Accept: application/json
+
+### Public/read endpoint - events
+GET {{CampusService_HostAddress}}/api/events
+Accept: application/json
+
+### Login
+POST {{CampusService_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@campus.local",
+  "password": "Admin@123"
+}
+
+### Admin dashboard
+GET {{CampusService_HostAddress}}/api/dashboard/admin
+Authorization: Bearer {{AdminToken}}
+Accept: application/json
+
+### Student dashboard
+GET {{CampusService_HostAddress}}/api/dashboard/student
+Authorization: Bearer {{StudentToken}}
+Accept: application/json
+
+### Student notifications
+GET {{CampusService_HostAddress}}/api/notifications/me
+Authorization: Bearer {{StudentToken}}
+Accept: application/json
