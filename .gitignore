@@ -1,13 +1,13 @@
 # Dependencies
-/node_modules
+node_modules/
 
 # Angular build files
-/dist
-/tmp
-/out-tsc
+dist/
+tmp/
+out-tsc/
 
 # Angular cache
-/.angular/cache
+.angular/
 
 # Environment / secrets
 .env
@@ -21,6 +21,7 @@ yarn-error.log*
 
 # IDE
 .idea/
+.vscode/
 *.iml
 
 # OS
@@ -28,4 +29,4 @@ yarn-error.log*
 Thumbs.db
 
 # Coverage
-/coverage
+coverage/

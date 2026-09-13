@@ -1,1 +1,0 @@
-import{Fa as i}from"./chunk-OZZT4S5S.js";var o=(()=>{class e{transform(t,r=80){return t?t.length>r?t.slice(0,r).trimEnd()+"\u2026":t:""}static{this.\u0275fac=function(r){return new(r||e)}}static{this.\u0275pipe=i({name:"shortText",type:e,pure:!0})}}return e})();export{o as a};
