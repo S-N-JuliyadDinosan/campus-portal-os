@@ -1,0 +1,3 @@
+import { Component } from '@angular/core';import { RouterLink } from '@angular/router';
+@Component({selector:'app-not-found',standalone:true,imports:[RouterLink],template:`<div style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#f8fafc"><div class="card" style="text-align:center;max-width:520px"><div style="font-size:4rem;font-family:Manrope;font-weight:800;color:#4f46e5">404</div><h1>Page not found</h1><p class="muted">The page you requested does not exist or you may not have access to it.</p><a class="btn btn-primary" routerLink="/dashboard">Back to dashboard</a></div></div>`})
+export class NotFoundComponent{}
