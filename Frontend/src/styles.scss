@@ -270,8 +270,8 @@ input[type='checkbox'], input[type='radio'] { width: 16px; height: 16px; accent-
 .toolbar .field { flex: 1; min-width: 180px; }
 .search { position: relative; }
 .search .input { padding-left: 39px; }
-.search::before { position: absolute; z-index: 1; top: 50%; left: 14px; width: 12px; height: 12px; border: 1.8px solid #8691a3; border-radius: 50%; content: ''; transform: translateY(-63%); }
-.search::after { position: absolute; z-index: 1; top: calc(50% + 5px); left: 25px; width: 6px; height: 1.8px; background: #8691a3; border-radius: 2px; content: ''; transform: rotate(45deg); }
+.search::before { position: absolute; z-index: 1; top: calc(100% - 24px); left: 14px; width: 12px; height: 12px; border: 1.8px solid #8691a3; border-radius: 50%; content: ''; transform: translateY(-63%); }
+.search::after { position: absolute; z-index: 1; top: calc(100% - 19px); left: 25px; width: 6px; height: 1.8px; background: #8691a3; border-radius: 2px; content: ''; transform: rotate(45deg); }
 
 .table-wrap { overflow: auto; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
 .table { width: 100%; min-width: 760px; border-collapse: collapse; }
