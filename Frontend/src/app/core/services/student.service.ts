@@ -10,7 +10,7 @@ export class StudentService {
   constructor(private http:HttpClient){}
   private unwrap<T>(){return map((r:ApiResponse<T>)=>{if(!r.success||r.data==null) throw new Error(r.message); return r.data;});}
   register(body:unknown){return this.http.post<ApiResponse<unknown>>(`${this.api}/students/register`,body);}
-  checkMaster(index:string){return this.http.get<ApiResponse<StudentMasterCheck>>(`${this.api}/student-master/${encodeURIComponent(index)}`).pipe(this.unwrap<StudentMasterCheck>());}
+  checkMaster(index:string){return this.http.get<ApiResponse<StudentMasterCheck>>(`${this.api}/student-master/check`,{params:{indexNumber:index}}).pipe(this.unwrap<StudentMasterCheck>());}
   me(){return this.http.get<ApiResponse<StudentProfile>>(`${this.api}/students/me`).pipe(this.unwrap<StudentProfile>());}
   updateMe(body:{phoneNumber?:string|null;address?:string|null}){return this.http.put<ApiResponse<StudentProfile>>(`${this.api}/students/me`,body).pipe(this.unwrap<StudentProfile>());}
   activity(){return this.http.get<ApiResponse<StudentActivitySummary>>(`${this.api}/students/me/activity-summary`).pipe(this.unwrap<StudentActivitySummary>());}

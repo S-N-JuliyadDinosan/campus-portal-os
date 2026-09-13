@@ -11,6 +11,16 @@ namespace CampusServicesPortal.Modules.Students.Controllers;
 [Route("api/student-master")]
 public sealed class StudentMasterController(IStudentMasterService service) : ControllerBase
 {
+    [AllowAnonymous]
+    [HttpGet("check")]
+    public async Task<ActionResult<ApiResponse<StudentMasterCheckResponse>>> CheckByQuery(
+        [FromQuery] string indexNumber,
+        CancellationToken cancellationToken)
+    {
+        var result = await service.CheckAsync(indexNumber, cancellationToken);
+        return Ok(ApiResponse<StudentMasterCheckResponse>.Ok(result));
+    }
+
     // API-026
     [AllowAnonymous]
     [HttpGet("{indexNumber}")]
@@ -75,12 +85,12 @@ public sealed class StudentMasterController(IStudentMasterService service) : Con
     // API-031
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult<ApiResponse<object>>> Deactivate(
+    public async Task<ActionResult<ApiResponse<object>>> Delete(
         int id,
         CancellationToken cancellationToken)
     {
-        await service.DeactivateAsync(id, cancellationToken);
-        return Ok(ApiResponse.Ok("Student master record deactivated."));
+        await service.DeleteAsync(id, cancellationToken);
+        return Ok(ApiResponse.Ok("Student master record permanently deleted."));
     }
 
     // API-032

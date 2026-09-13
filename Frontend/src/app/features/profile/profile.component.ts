@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StudentService } from '../../core/services/student.service';
@@ -44,11 +44,11 @@ import { ToastService } from '../../core/services/toast.service';
 export class ProfileComponent implements OnInit{
   loading=true;saving=false;error='';profile:StudentProfile|null=null;activity:StudentActivitySummary|null=null;phone='';address='';
   passwordOpen=false;currentPassword='';newPassword='';confirmPassword='';changingPassword=false;
-  constructor(private students:StudentService,private auth:AuthService,private errors:ApiErrorService,private toast:ToastService){}
+  constructor(private students:StudentService,private auth:AuthService,private errors:ApiErrorService,private toast:ToastService,private cdr:ChangeDetectorRef){}
   ngOnInit(){
-    this.students.me().subscribe({next:p=>{this.profile=p;this.phone=p.phoneNumber||'';this.address=p.address||'';this.loading=false},error:e=>{this.error=this.errors.message(e);this.loading=false}});
-    this.students.activity().subscribe({next:a=>this.activity=a,error:()=>{}});
+    this.students.me().subscribe({next:p=>{this.profile=p;this.phone=p.phoneNumber||'';this.address=p.address||'';this.loading=false;this.cdr.markForCheck()},error:e=>{this.error=this.errors.message(e);this.loading=false;this.cdr.markForCheck()}});
+    this.students.activity().subscribe({next:a=>{this.activity=a;this.cdr.markForCheck()},error:()=>{}});
   }
-  save(){this.saving=true;this.students.updateMe({phoneNumber:this.phone||null,address:this.address||null}).subscribe({next:p=>{this.profile=p;this.saving=false;this.toast.success('Profile updated.')},error:e=>{this.saving=false;this.toast.error(this.errors.message(e))}})}
-  changePassword(){if(this.newPassword!==this.confirmPassword)return;this.changingPassword=true;this.auth.changePassword(this.currentPassword,this.newPassword).subscribe({next:()=>{this.changingPassword=false;this.toast.success('Password changed. Please sign in again.');this.auth.clear();setTimeout(()=>location.assign('/login'),600)},error:e=>{this.changingPassword=false;this.toast.error(this.errors.message(e))}})}
+  save(){this.saving=true;this.students.updateMe({phoneNumber:this.phone||null,address:this.address||null}).subscribe({next:p=>{this.profile=p;this.phone=p.phoneNumber||'';this.address=p.address||'';this.saving=false;this.toast.success('Profile updated.');this.cdr.markForCheck()},error:e=>{this.saving=false;this.toast.error(this.errors.message(e));this.cdr.markForCheck()}})}
+  changePassword(){if(this.newPassword!==this.confirmPassword)return;this.changingPassword=true;this.auth.changePassword(this.currentPassword,this.newPassword).subscribe({next:()=>{this.changingPassword=false;this.toast.success('Password changed. Please sign in again.');this.auth.clear();this.cdr.markForCheck();setTimeout(()=>location.assign('/login'),600)},error:e=>{this.changingPassword=false;this.toast.error(this.errors.message(e));this.cdr.markForCheck()}})}
 }

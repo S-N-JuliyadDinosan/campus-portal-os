@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -47,7 +47,7 @@ export class RegisterComponent{
     fullName:[''],facultyId:[null as number|null],phoneNumber:['',[Validators.maxLength(30)]],address:['',[Validators.maxLength(500)]],
     password:['',[Validators.required,Validators.minLength(8)]],confirmPassword:['',[Validators.required]]
   },{validators:passwordMatchValidator});
-  constructor(private students:StudentService,private errors:ApiErrorService,private toast:ToastService,private router:Router){
+  constructor(private students:StudentService,private errors:ApiErrorService,private toast:ToastService,private router:Router,private cdr:ChangeDetectorRef){
     this.form.controls.indexNumber.valueChanges.subscribe(()=>{this.master=null;this.syncFallbackValidators(false)});
   }
   private syncFallbackValidators(required:boolean){
@@ -59,12 +59,25 @@ export class RegisterComponent{
   checkIndex(){
     if(this.form.controls.indexNumber.invalid)return;
     this.checking=true;this.error='';
-    this.students.checkMaster(this.form.controls.indexNumber.value!.trim()).subscribe({next:r=>{this.master=r;this.checking=false;this.syncFallbackValidators(!r.exists)},error:e=>{this.checking=false;this.error=this.errors.message(e)}});
+    this.cdr.detectChanges();
+    this.students.checkMaster(this.form.controls.indexNumber.value!.trim()).subscribe({
+      next:r=>{
+        this.master=r;
+        this.syncFallbackValidators(!r.exists);
+        this.checking=false;
+        this.cdr.markForCheck();
+      },
+      error:e=>{
+        this.checking=false;
+        this.error=this.errors.message(e);
+        this.cdr.markForCheck();
+      }
+    });
   }
   submit(){
     if(this.form.invalid||!this.master)return;
     this.loading=true;this.error='';const v=this.form.getRawValue();
     const body={indexNumber:v.indexNumber!.trim(),email:v.email!.trim(),password:v.password!,phoneNumber:v.phoneNumber?.trim()||null,address:v.address?.trim()||null,fullName:!this.master.exists?v.fullName?.trim()||null:null,facultyId:!this.master.exists?v.facultyId:null};
-    this.students.register(body).subscribe({next:r=>{this.loading=false;if(r.success){this.toast.success('Account created. You can sign in now.');void this.router.navigate(['/login']);}else this.error=r.message;},error:e=>{this.loading=false;this.error=this.errors.message(e,'Registration failed.')}});
+    this.students.register(body).subscribe({next:r=>{this.loading=false;if(r.success){this.toast.success('Account created. You can sign in now.');void this.router.navigate(['/login']);}else this.error=r.message;this.cdr.markForCheck()},error:e=>{this.loading=false;this.error=this.errors.message(e,'Registration failed.');this.cdr.markForCheck()}});
   }
 }

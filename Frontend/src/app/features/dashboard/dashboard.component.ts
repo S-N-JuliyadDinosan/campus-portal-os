@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AdminDashboard, StudentDashboard } from '../../core/models/domain.models';
 import { ApiErrorService } from '../../core/services/api-error.service';
@@ -224,19 +224,36 @@ export class DashboardComponent implements OnInit {
   constructor(
     public auth: AuthService,
     private service: DashboardService,
-    private errors: ApiErrorService
+    private errors: ApiErrorService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     if (this.auth.role() === 'Admin') {
       this.service.admin().subscribe({
-        next: data => { this.admin = data; this.loading = false; },
-        error: (error: unknown) => { this.error = this.errors.message(error); this.loading = false; }
+        next: data => {
+          this.admin = data;
+          this.loading = false;
+          this.cdr.markForCheck();
+        },
+        error: (error: unknown) => {
+          this.error = this.errors.message(error);
+          this.loading = false;
+          this.cdr.markForCheck();
+        }
       });
     } else {
       this.service.student().subscribe({
-        next: data => { this.student = data; this.loading = false; },
-        error: (error: unknown) => { this.error = this.errors.message(error); this.loading = false; }
+        next: data => {
+          this.student = data;
+          this.loading = false;
+          this.cdr.markForCheck();
+        },
+        error: (error: unknown) => {
+          this.error = this.errors.message(error);
+          this.loading = false;
+          this.cdr.markForCheck();
+        }
       });
     }
   }

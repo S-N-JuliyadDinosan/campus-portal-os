@@ -11,6 +11,6 @@ public interface IStudentMasterService
     Task<StudentMasterResponse> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<StudentMasterResponse> CreateAsync(CreateStudentMasterRequest request, CancellationToken cancellationToken = default);
     Task<StudentMasterResponse> UpdateAsync(int id, UpdateStudentMasterRequest request, CancellationToken cancellationToken = default);
-    Task DeactivateAsync(int id, CancellationToken cancellationToken = default);
+    Task DeleteAsync(int id, CancellationToken cancellationToken = default);
     Task<StudentMasterImportResponse> ImportCsvAsync(IFormFile file, CancellationToken cancellationToken = default);
 }

@@ -162,13 +162,22 @@ public sealed class StudentMasterService(ApplicationDbContext dbContext) : IStud
         return Map(record);
     }
 
-    public async Task DeactivateAsync(
+    public async Task DeleteAsync(
         int id,
         CancellationToken cancellationToken = default)
     {
-        var record = await dbContext.StudentMasterList.FindAsync([id], cancellationToken)
+        var record = await dbContext.StudentMasterList
+            .Include(x => x.Student)
+            .SingleOrDefaultAsync(x => x.StudentMasterId == id, cancellationToken)
             ?? throw new NotFoundException("Student master record not found.");
-        record.IsActive = false;
+
+        if (record.Student is not null)
+        {
+            throw new BusinessRuleException(
+                "This student master record cannot be deleted because it is linked to a registered student account.");
+        }
+
+        dbContext.StudentMasterList.Remove(record);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
