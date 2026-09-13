@@ -74,6 +74,9 @@ public class FeeService(
         feeType.Description =
             dto.Description;
 
+        feeType.IsActive =
+            dto.IsActive;
+
         await _fees.UpdateFeeTypeAsync(
             feeType);
 

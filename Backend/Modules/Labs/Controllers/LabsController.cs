@@ -136,7 +136,7 @@ public sealed class LabsController : ControllerBase
     }
 
     // =====================================================
-    // DELETE / DEACTIVATE LAB
+    // DELETE LAB
     // ADMIN ONLY
     // =====================================================
     [Authorize(Roles = "Admin")]

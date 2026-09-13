@@ -44,6 +44,44 @@ public sealed class LabRepository : ILabRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task DeleteAsync(Lab lab)
+    {
+        var bookingIds = await _context.LabBookings
+            .Where(x => x.LabId == lab.LabId)
+            .Select(x => x.LabBookingId)
+            .ToListAsync();
+
+        if (bookingIds.Count > 0)
+        {
+            var linkedFeePayments = await _context.FeePayments
+                .Where(x => x.LabBookingId.HasValue &&
+                            bookingIds.Contains(x.LabBookingId.Value))
+                .ToListAsync();
+
+            foreach (var feePayment in linkedFeePayments)
+            {
+                feePayment.LabBookingId = null;
+            }
+
+            _context.LabBookings.RemoveRange(
+                await _context.LabBookings
+                    .Where(x => x.LabId == lab.LabId)
+                    .ToListAsync());
+        }
+
+        _context.LabSeats.RemoveRange(
+            await _context.LabSeats
+                .Where(x => x.LabId == lab.LabId)
+                .ToListAsync());
+        _context.LabTimeSlots.RemoveRange(
+            await _context.LabTimeSlots
+                .Where(x => x.LabId == lab.LabId)
+                .ToListAsync());
+        _context.Labs.Remove(lab);
+
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<bool> CodeExistsAsync(
         string code,
         int? excludeLabId = null)
