@@ -382,7 +382,7 @@ public sealed class EventService : IEventService
 
 
     // =====================================================
-    // DELETE / DEACTIVATE EVENT
+    // DELETE EVENT
     // =====================================================
     public async Task DeleteAsync(
         int eventId)
@@ -398,18 +398,8 @@ public sealed class EventService : IEventService
         }
 
 
-        eventEntity.IsActive =
-            false;
-
-        eventEntity.IsPublished =
-            false;
-
-
-        _eventRepository.Update(
-            eventEntity);
-
         await _eventRepository
-            .SaveChangesAsync();
+            .DeleteWithDependentsAsync(eventId);
     }
 
 

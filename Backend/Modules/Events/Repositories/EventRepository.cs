@@ -168,13 +168,30 @@ public sealed class EventRepository : IEventRepository
 
 
     // =====================================================
-    // DELETE EVENT
+    // DELETE EVENT WITH ITS DEPENDENT RECORDS
     // =====================================================
-    public void Delete(
-        Event eventEntity)
+    public async Task DeleteWithDependentsAsync(
+        int eventId)
     {
-        _context.Events
-            .Remove(eventEntity);
+        await using var transaction =
+            await _context.Database.BeginTransactionAsync();
+
+        // Registrations reference both the event and, optionally, a seat. They
+        // must be deleted before the seats and event because those FKs restrict
+        // deletion rather than cascading it.
+        await _context.EventRegistrations
+            .Where(registration => registration.EventId == eventId)
+            .ExecuteDeleteAsync();
+
+        await _context.EventSeats
+            .Where(seat => seat.EventId == eventId)
+            .ExecuteDeleteAsync();
+
+        await _context.Events
+            .Where(eventEntity => eventEntity.EventId == eventId)
+            .ExecuteDeleteAsync();
+
+        await transaction.CommitAsync();
     }
 
 

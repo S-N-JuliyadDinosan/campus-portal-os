@@ -28,8 +28,10 @@ public interface IEventRepository
     void Update(
         Event eventEntity);
 
-    void Delete(
-        Event eventEntity);
+    // Removes the event and its event-owned records (seats and registrations).
+    // The database relationships are restrictive, so these must be removed together.
+    Task DeleteWithDependentsAsync(
+        int eventId);
 
     Task SaveChangesAsync();
 }
