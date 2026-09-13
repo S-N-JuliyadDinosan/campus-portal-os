@@ -146,6 +146,19 @@ public sealed class EventRepository : IEventRepository
 
 
     // =====================================================
+    // CHECK WHETHER A VENUE IS STILL REFERENCED
+    // =====================================================
+    public async Task<bool> HasEventsForVenueAsync(
+        int venueId)
+    {
+        return await _context.Events
+            .AsNoTracking()
+            .AnyAsync(eventEntity =>
+                eventEntity.VenueId == venueId);
+    }
+
+
+    // =====================================================
     // ADD EVENT
     // =====================================================
     public async Task AddAsync(

@@ -17,20 +17,19 @@ public sealed class VenueRepository : IVenueRepository
 
 
     // =====================================================
-    // GET ALL ACTIVE VENUES
+    // GET ALL VENUES
     // =====================================================
     public async Task<IEnumerable<Venue>> GetAllAsync()
     {
         return await _context.Venues
             .AsNoTracking()
-            .Where(v => v.IsActive)
             .OrderBy(v => v.Name)
             .ToListAsync();
     }
 
 
     // =====================================================
-    // GET ACTIVE VENUE BY ID
+    // GET VENUE BY ID
     // =====================================================
     public async Task<Venue?> GetByIdAsync(
         int venueId)
@@ -38,8 +37,7 @@ public sealed class VenueRepository : IVenueRepository
         return await _context.Venues
             .AsNoTracking()
             .FirstOrDefaultAsync(v =>
-                v.VenueId == venueId &&
-                v.IsActive);
+                v.VenueId == venueId);
     }
 
 
@@ -51,8 +49,7 @@ public sealed class VenueRepository : IVenueRepository
     {
         return await _context.Venues
             .AnyAsync(v =>
-                v.VenueId == venueId &&
-                v.IsActive);
+                v.VenueId == venueId);
     }
 
 

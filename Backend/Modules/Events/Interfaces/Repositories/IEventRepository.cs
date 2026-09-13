@@ -22,6 +22,9 @@ public interface IEventRepository
     Task<int> GetMaxActiveEventCapacityByVenueAsync(
         int venueId);
 
+    Task<bool> HasEventsForVenueAsync(
+        int venueId);
+
     Task AddAsync(
         Event eventEntity);
 
