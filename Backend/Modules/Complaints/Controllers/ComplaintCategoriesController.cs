@@ -58,12 +58,12 @@ public sealed class ComplaintCategoriesController(
     {
         var updated = await service.UpdateAsync(id, dto);
 
-        if (!updated)
+        if (updated is null)
         {
             return NotFound();
         }
 
-        return NoContent();
+        return Ok(updated);
     }
 
     // DELETE: /api/complaint-categories/{id}

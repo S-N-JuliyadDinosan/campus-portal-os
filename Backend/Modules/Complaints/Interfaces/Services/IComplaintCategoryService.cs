@@ -13,7 +13,7 @@ public interface IComplaintCategoryService
     Task<ComplaintCategoryResponseDto> CreateAsync(
         ComplaintCategoryCreateDto dto);
 
-    Task<bool> UpdateAsync(
+    Task<ComplaintCategoryResponseDto?> UpdateAsync(
         int id,
         ComplaintCategoryUpdateDto dto);
 
