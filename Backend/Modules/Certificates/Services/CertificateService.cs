@@ -174,6 +174,12 @@ public class CertificateService : ICertificateService
         CreateCertificateRequestDto dto)
     {
         var studentId = RequireStudentId();
+        var reason = dto.Reason?.Trim();
+
+        if (string.IsNullOrWhiteSpace(reason))
+        {
+            throw new BusinessRuleException("Reason is required.");
+        }
 
         var certificateType = await _repository.GetCertificateTypeByIdAsync(
             dto.CertificateTypeId);
@@ -199,7 +205,7 @@ public class CertificateService : ICertificateService
         {
             CertificateTypeId = dto.CertificateTypeId,
             StudentId = studentId,
-            Reason = dto.Reason?.Trim(),
+            Reason = reason,
             Status = CertificateRequestStatus.Pending
         };
 
