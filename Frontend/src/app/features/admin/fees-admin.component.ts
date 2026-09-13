@@ -33,7 +33,7 @@ import { ToastService } from '../../core/services/toast.service';
           <div class="divider"></div>
           <div class="table-wrap"><table class="table"><thead><tr><th>ID</th><th>Student</th><th>Fee</th><th>Period</th><th>Due</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>
             @for (f of fees; track f.feePaymentId) {
-              <tr><td>#{{f.feePaymentId}}</td><td>#{{f.studentId}}</td><td><strong>{{f.feeTypeName}}</strong></td><td>{{f.billingPeriod}}</td><td>{{f.dueDate|date:'mediumDate'}}</td><td>{{f.amount|currency:'LKR ':'symbol':'1.2-2'}}</td><td><app-status-badge [value]="f.status"/></td><td class="right"><div class="row" style="justify-content:flex-end"><select class="select" style="width:130px;padding:7px" [ngModel]="f.status" (ngModelChange)="updateStatus(f,$event)"><option>Outstanding</option><option>Paid</option><option>Cancelled</option><option>Waived</option></select><button class="btn btn-danger btn-sm" (click)="deleteFee(f)">Delete</button></div></td></tr>
+              <tr><td>{{f.feePaymentId}}</td><td>{{f.studentIndexNumber || f.studentId}}</td><td><strong>{{f.feeTypeName}}</strong></td><td>{{f.billingPeriod}}</td><td>{{f.dueDate|date:'mediumDate'}}</td><td>{{f.amount|currency:'LKR ':'symbol':'1.2-2'}}</td><td><app-status-badge [value]="f.status"/></td><td class="right"><div class="row" style="justify-content:flex-end"><select class="select" style="width:130px;padding:7px" [ngModel]="f.status" (ngModelChange)="updateStatus(f,$event)"><option>Outstanding</option><option>Paid</option><option>Cancelled</option><option>Waived</option></select><button class="btn btn-danger btn-sm" (click)="deleteFee(f)">Delete</button></div></td></tr>
             }
           </tbody></table></div>
         </div>

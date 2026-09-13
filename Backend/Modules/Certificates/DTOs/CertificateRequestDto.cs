@@ -11,6 +11,9 @@ public class CertificateRequestDto
 
     public int StudentId { get; set; }
 
+    public string StudentIndexNumber { get; set; }
+        = string.Empty;
+
     public string StudentName { get; set; }
         = string.Empty;
 

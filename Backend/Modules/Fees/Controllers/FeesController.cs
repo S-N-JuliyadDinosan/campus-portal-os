@@ -1,6 +1,7 @@
 ﻿using CampusService.Modules.Fees.DTOs;
 using CampusService.Modules.Fees.Interfaces;
 using CampusServicesPortal.Common.Security;
+using CampusServicesPortal.Modules.Fees.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -141,7 +142,7 @@ public class FeesController(
         var result =
             await _feeService.GetAllFeesAsync();
 
-        return Ok(result);
+        return Ok(MapPayments(result));
     }
 
 
@@ -180,7 +181,7 @@ public class FeesController(
             }
         }
 
-        return Ok(result);
+        return Ok(MapPayment(result));
     }
 
 
@@ -205,7 +206,7 @@ public class FeesController(
             await _feeService.StudentFeesAsync(
                 _currentUserService.StudentId.Value);
 
-        return Ok(result);
+        return Ok(MapPayments(result));
     }
 
 
@@ -226,7 +227,7 @@ public class FeesController(
             await _feeService.GetUnpaidFeesAsync(
                 _currentUserService.StudentId.Value);
 
-        return Ok(result);
+        return Ok(MapPayments(result));
     }
 
 
@@ -247,7 +248,7 @@ public class FeesController(
             await _feeService.GetPaidFeesAsync(
                 _currentUserService.StudentId.Value);
 
-        return Ok(result);
+        return Ok(MapPayments(result));
     }
 
 
@@ -271,7 +272,7 @@ public class FeesController(
             await _feeService.StudentFeesAsync(
                 studentId);
 
-        return Ok(result);
+        return Ok(MapPayments(result));
     }
 
 
@@ -289,7 +290,7 @@ public class FeesController(
             await _feeService.GetUnpaidFeesAsync(
                 studentId);
 
-        return Ok(result);
+        return Ok(MapPayments(result));
     }
 
 
@@ -307,7 +308,7 @@ public class FeesController(
             await _feeService.GetPaidFeesAsync(
                 studentId);
 
-        return Ok(result);
+        return Ok(MapPayments(result));
     }
 
 
@@ -489,6 +490,30 @@ public class FeesController(
     // ==========================================
     // PRIVATE SECURITY HELPER
     // ==========================================
+
+    private static IEnumerable<FeePaymentResponseDto> MapPayments(
+        IEnumerable<FeePayment> fees)
+    {
+        return fees.Select(MapPayment);
+    }
+
+    private static FeePaymentResponseDto MapPayment(
+        FeePayment fee)
+    {
+        return new FeePaymentResponseDto
+        {
+            FeePaymentId = fee.FeePaymentId,
+            StudentId = fee.StudentId,
+            StudentIndexNumber = fee.Student?.IndexNumber ?? string.Empty,
+            FeeTypeId = fee.FeeTypeId,
+            FeeTypeName = fee.FeeType?.Name ?? string.Empty,
+            Amount = fee.Amount,
+            BillingPeriod = fee.BillingPeriod,
+            Status = fee.Status.ToString(),
+            DueDate = fee.DueDate,
+            ReceiptNumber = fee.ReceiptNumber
+        };
+    }
 
     private bool CanAccessStudent(
         int studentId)

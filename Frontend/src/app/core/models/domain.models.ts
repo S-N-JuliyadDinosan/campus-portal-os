@@ -25,10 +25,10 @@ export interface ComplaintCategory { complaintCategoryId:number; name:string; de
 export interface Complaint { complaintId:number; studentId:number; complaintCategoryId:number; categoryName:string; description:string; status:number; resolutionNote?:string|null; resolvedAt?:string|null; statusChangedByUserId?:number|null; }
 
 export interface CertificateType { certificateTypeId:number; name:string; description?:string|null; isActive:boolean; createdAt:string; }
-export interface CertificateRequest { certificateRequestId:number; certificateTypeId:number; certificateTypeName:string; studentId:number; studentName:string; reviewedByUserId?:number|null; reason?:string|null; status:string; reviewNote?:string|null; requestedAt:string; reviewedAt?:string|null; }
+export interface CertificateRequest { certificateRequestId:number; certificateTypeId:number; certificateTypeName:string; studentId:number; studentIndexNumber?:string; studentName:string; reviewedByUserId?:number|null; reason?:string|null; status:string; reviewNote?:string|null; requestedAt:string; reviewedAt?:string|null; }
 
 export interface FeeType { feeTypeId:number; name:string; description?:string|null; isActive:boolean; createdAt?:string; updatedAt?:string|null; }
-export interface FeePayment { feePaymentId:number; studentId:number; feeTypeId:number; feeTypeName:string; amount:number; billingPeriod:string; status:string; dueDate:string; receiptNumber?:string|null; paidAt?:string|null; paymentMethod?:string|null; paymentReference?:string|null; }
+export interface FeePayment { feePaymentId:number; studentId:number; studentIndexNumber?:string; feeTypeId:number; feeTypeName:string; amount:number; billingPeriod:string; status:string; dueDate:string; receiptNumber?:string|null; paidAt?:string|null; paymentMethod?:string|null; paymentReference?:string|null; }
 export interface FeeReceipt { feePaymentId:number; studentId:number; feeType:string; billingPeriod:string; amount:number; receiptNumber:string; paidAt:string; paymentMethod:string; paymentReference:string; }
 
 export interface NotificationItem { notificationId:number; studentId:number; type:string; title:string; message:string; isRead:boolean; createdAt:string; readAt?:string|null; }

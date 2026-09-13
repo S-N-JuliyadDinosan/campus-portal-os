@@ -7,6 +7,8 @@ public class FeePaymentResponseDto
 
     public int StudentId { get; set; }
 
+    public string StudentIndexNumber { get; set; } = string.Empty;
+
     public int FeeTypeId { get; set; }
 
     public string FeeTypeName { get; set; } = string.Empty;

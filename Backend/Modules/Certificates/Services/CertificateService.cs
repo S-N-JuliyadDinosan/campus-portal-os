@@ -358,6 +358,9 @@ public class CertificateService : ICertificateService
             StudentId =
                 request.StudentId,
 
+            StudentIndexNumber =
+                request.Student?.IndexNumber ?? string.Empty,
+
             StudentName =
                 request.Student?.FullName ?? string.Empty,
 
