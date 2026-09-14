@@ -160,9 +160,7 @@ public sealed class LabService : ILabService
             return false;
         }
 
-        lab.IsActive = false;
-
-        await _labRepository.UpdateAsync(lab);
+        await _labRepository.DeleteAsync(lab);
 
         return true;
     }

@@ -162,7 +162,7 @@ public sealed class EventsController : ControllerBase
 
 
     // =====================================================
-    // DELETE / DEACTIVATE EVENT
+    // DELETE EVENT
     // ADMIN ONLY
     // =====================================================
     [Authorize(Roles = "Admin")]

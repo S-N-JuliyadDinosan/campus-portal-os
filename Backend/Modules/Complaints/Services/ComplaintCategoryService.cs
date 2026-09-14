@@ -44,7 +44,7 @@ public sealed class ComplaintCategoryService(
         return MapToResponse(category);
     }
 
-    public async Task<bool> UpdateAsync(
+    public async Task<ComplaintCategoryResponseDto?> UpdateAsync(
         int id,
         ComplaintCategoryUpdateDto dto)
     {
@@ -52,7 +52,7 @@ public sealed class ComplaintCategoryService(
 
         if (category is null)
         {
-            return false;
+            return null;
         }
 
         category.Name = dto.Name.Trim();
@@ -62,7 +62,7 @@ public sealed class ComplaintCategoryService(
         await repository.UpdateAsync(category);
         await repository.SaveChangesAsync();
 
-        return true;
+        return MapToResponse(category);
     }
 
     public async Task<bool> DeleteAsync(int id)

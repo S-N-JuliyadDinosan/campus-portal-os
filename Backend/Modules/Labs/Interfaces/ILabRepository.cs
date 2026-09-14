@@ -12,6 +12,8 @@ public interface ILabRepository
 
     Task UpdateAsync(Lab lab);
 
+    Task DeleteAsync(Lab lab);
+
     Task<bool> CodeExistsAsync(
         string code,
         int? excludeLabId = null);

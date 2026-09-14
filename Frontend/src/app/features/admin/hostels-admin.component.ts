@@ -52,7 +52,7 @@ import { ToastService } from '../../core/services/toast.service';
               <tbody>
                 @for (a of applications; track a.hostelApplicationId) {
                   <tr>
-                    <td>#{{ a.studentId }}</td>
+                    <td><strong>{{ a.studentName || 'Student' }}</strong><div class="small muted">{{ a.studentIndexNumber || a.studentId }}</div></td>
                     <td><strong>{{ a.preferredHostelName || ('Hostel #' + a.preferredHostelId) }}</strong></td>
                     <td>{{ a.academicYear }}<div class="small muted">{{ a.semester }}</div></td>
                     <td><app-status-badge [value]="a.status" /></td>
@@ -137,7 +137,7 @@ import { ToastService } from '../../core/services/toast.service';
                 </div>
               }
               @if (!hostels.length) {
-                <div class="empty">No active hostels found.</div>
+                <div class="empty">No hostels found.</div>
               }
             </div>
           </div>
@@ -332,7 +332,7 @@ export class HostelsAdminComponent implements OnInit {
   loadHostels() {
     this.service.hostels().subscribe({
       next: hostels => {
-        this.hostels = this.activeHostels(hostels);
+        this.hostels = this.sortedHostels(hostels);
         this.cdr.markForCheck();
       },
       error: error => this.toast.error(this.errors.message(error))
@@ -366,7 +366,7 @@ export class HostelsAdminComponent implements OnInit {
       const payload = { name, location, isActive: this.hostelForm.isActive };
       this.service.updateHostel(editId, payload).subscribe({
         next: () => {
-          this.hostels = this.activeHostels(
+          this.hostels = this.sortedHostels(
             this.hostels.map(hostel =>
               hostel.hostelId === editId ? { ...hostel, ...payload } : hostel
             )
@@ -383,7 +383,7 @@ export class HostelsAdminComponent implements OnInit {
 
     this.service.createHostel({ name, location }).subscribe({
       next: created => {
-        this.hostels = this.activeHostels([
+        this.hostels = this.sortedHostels([
           ...this.hostels.filter(hostel => hostel.hostelId !== created.hostelId),
           created
         ]);
@@ -471,9 +471,8 @@ export class HostelsAdminComponent implements OnInit {
     });
   }
 
-  private activeHostels(hostels: Hostel[]): Hostel[] {
+  private sortedHostels(hostels: Hostel[]): Hostel[] {
     return hostels
-      .filter(hostel => hostel.isActive)
       .sort((left, right) => left.name.localeCompare(right.name));
   }
 

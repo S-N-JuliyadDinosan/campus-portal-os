@@ -26,6 +26,7 @@ public sealed class LabBookingRepository
     {
         return await _context.LabBookings
             .Include(x => x.Lab)
+            .Include(x => x.Student)
             .Include(x => x.LabTimeSlot)
             .Include(x => x.LabSeat)
             .FirstOrDefaultAsync(
@@ -45,6 +46,7 @@ public sealed class LabBookingRepository
         return await _context.LabBookings
             .AsNoTracking()
             .Include(x => x.Lab)
+            .Include(x => x.Student)
             .Include(x => x.LabTimeSlot)
             .Include(x => x.LabSeat)
             .Where(x =>
@@ -78,6 +80,7 @@ public sealed class LabBookingRepository
             _context.LabBookings
                 .AsNoTracking()
                 .Include(x => x.Lab)
+                .Include(x => x.Student)
                 .Include(x => x.LabTimeSlot)
                 .Include(x => x.LabSeat)
                 .AsQueryable();

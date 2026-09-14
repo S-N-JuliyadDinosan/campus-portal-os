@@ -757,6 +757,14 @@ public sealed class HostelApplicationService
             StudentId =
                 application.StudentId,
 
+            StudentName =
+                application.Student?.FullName
+                ?? string.Empty,
+
+            StudentIndexNumber =
+                application.Student?.IndexNumber
+                ?? string.Empty,
+
             PreferredHostelId =
                 application.PreferredHostelId,
 

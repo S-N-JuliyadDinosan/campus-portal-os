@@ -1,3 +1,123 @@
-import { Component, OnInit } from '@angular/core';import { CommonModule } from '@angular/common';import { FormsModule } from '@angular/forms';import { FeeService } from '../../core/services/portal-services';import { StudentService } from '../../core/services/student.service';import { Faculty, FeePayment, FeeType, StudentListItem } from '../../core/models/domain.models';import { StatusBadgeComponent } from '../../shared/components/status-badge.component';import { ApiErrorService } from '../../core/services/api-error.service';import { ToastService } from '../../core/services/toast.service';
-@Component({selector:'app-fees-admin',standalone:true,imports:[CommonModule,FormsModule,StatusBadgeComponent],template:`<div class="page"><div class="page-head"><div><h1>Fee administration</h1><p>Maintain fee types, assign fees to students or faculties and manage payment status.</p></div><button class="btn btn-primary" (click)="assignModal=true">Assign fee</button></div><div class="tabs"><button class="tab" [class.active]="tab==='payments'" (click)="tab='payments';loadFees()">Fee items</button><button class="tab" [class.active]="tab==='types'" (click)="tab='types'">Fee types</button></div>@if(tab==='payments'){<div class="card"><div class="row between"><div><h3 class="card-title">Assigned fee items</h3><div class="card-sub">System-wide list returned by /api/fees.</div></div><button class="btn btn-secondary btn-sm" (click)="loadFees()">Refresh</button></div><div class="divider"></div><div class="table-wrap"><table class="table"><thead><tr><th>ID</th><th>Student</th><th>Fee</th><th>Period</th><th>Due</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>@for(f of fees;track f.feePaymentId){<tr><td>#{{f.feePaymentId}}</td><td>#{{f.studentId}}</td><td><strong>{{f.feeTypeName}}</strong></td><td>{{f.billingPeriod}}</td><td>{{f.dueDate|date:'mediumDate'}}</td><td>{{f.amount|currency:'LKR ':'symbol':'1.2-2'}}</td><td><app-status-badge [value]="f.status"/></td><td class="right"><div class="row" style="justify-content:flex-end"><select class="select" style="width:130px;padding:7px" [ngModel]="f.status" (ngModelChange)="updateStatus(f,$event)"><option>Outstanding</option><option>Paid</option><option>Cancelled</option><option>Waived</option></select><button class="btn btn-danger btn-sm" (click)="deleteFee(f)">Delete</button></div></td></tr>}</tbody></table></div></div>}@if(tab==='types'){<div class="grid grid-3"><div class="card"><h3 class="card-title">{{typeEditId?'Edit':'Create'}} fee type</h3><form class="stack" #tf="ngForm" (ngSubmit)="saveType()" style="margin-top:16px"><div class="field"><label>Name</label><input class="input" required name="name" [(ngModel)]="typeForm.name"></div><div class="field"><label>Description</label><textarea class="textarea" name="desc" [(ngModel)]="typeForm.description"></textarea></div><div class="row"><button class="btn btn-primary" [disabled]="tf.invalid">Save</button>@if(typeEditId){<button type="button" class="btn btn-secondary" (click)="resetType()">Cancel</button>}</div></form></div><div class="card" style="grid-column:span 2"><h3 class="card-title">Fee types</h3><div class="divider"></div><div class="table-wrap"><table class="table"><thead><tr><th>Name</th><th>Description</th><th>Status</th><th></th></tr></thead><tbody>@for(t of types;track t.feeTypeId){<tr><td><strong>{{t.name}}</strong></td><td>{{t.description||'—'}}</td><td><app-status-badge [value]="t.isActive?'Active':'Inactive'"/></td><td class="right"><div class="row" style="justify-content:flex-end"><button class="btn btn-secondary btn-sm" (click)="editType(t)">Edit</button><button class="btn btn-danger btn-sm" (click)="deleteType(t)">Delete</button></div></td></tr>}</tbody></table></div></div></div>}@if(assignModal){<div class="modal-backdrop" (click)="assignModal=false"><div class="modal" (click)="$event.stopPropagation()"><div class="modal-head"><div><h2>Assign fee</h2><div class="small muted">Choose either one student or one faculty.</div></div><button class="icon-btn" (click)="assignModal=false">×</button></div><form class="form-grid" #af="ngForm" (ngSubmit)="assignFee()"><div class="field"><label>Target type</label><select class="select" name="target" [(ngModel)]="targetType" (ngModelChange)="targetId=null"><option value="student">Student</option><option value="faculty">Faculty</option></select></div><div class="field"><label>{{targetType==='student'?'Student':'Faculty'}}</label>@if(targetType==='student'){<select class="select" required name="targetId" [(ngModel)]="targetId"><option [ngValue]="null">Choose student</option>@for(s of students;track s.studentId){<option [ngValue]="s.studentId">{{s.indexNumber}} · {{s.fullName}}</option>}</select>}@else{<select class="select" required name="targetId" [(ngModel)]="targetId"><option [ngValue]="null">Choose faculty</option>@for(f of faculties;track f.facultyId){<option [ngValue]="f.facultyId">{{f.code}} · {{f.name}}</option>}</select>}</div><div class="field"><label>Fee type</label><select class="select" required name="feeType" [(ngModel)]="assignForm.feeTypeId"><option [ngValue]="null">Choose fee</option>@for(t of activeTypes;track t.feeTypeId){<option [ngValue]="t.feeTypeId">{{t.name}}</option>}</select></div><div class="field"><label>Amount (LKR)</label><input class="input" type="number" min="0.01" step="0.01" required name="amount" [(ngModel)]="assignForm.amount"></div><div class="field"><label>Billing period</label><input class="input" required name="period" [(ngModel)]="assignForm.billingPeriod" placeholder="Semester 1 / 2026"></div><div class="field"><label>Due date</label><input class="input" type="date" required name="due" [(ngModel)]="assignForm.dueDate"></div><div class="row"><button class="btn btn-primary" [disabled]="af.invalid||!targetId">Assign fee</button><button type="button" class="btn btn-secondary" (click)="assignModal=false">Cancel</button></div></form></div></div>}</div>`})
-export class FeesAdminComponent implements OnInit{tab:'payments'|'types'='payments';fees:FeePayment[]=[];types:FeeType[]=[];students:StudentListItem[]=[];faculties:Faculty[]=[];typeEditId:number|null=null;typeForm:any={name:'',description:''};assignModal=false;targetType:'student'|'faculty'='student';targetId:number|null=null;assignForm:any={feeTypeId:null,amount:0,billingPeriod:'',dueDate:new Date(Date.now()+7*86400000).toISOString().slice(0,10)};constructor(private service:FeeService,private studentsService:StudentService,private errors:ApiErrorService,private toast:ToastService){}ngOnInit(){this.loadTypes();this.loadFees();this.studentsService.search('',undefined,1).subscribe({next:r=>this.students=r.items});this.studentsService.faculties().subscribe({next:x=>this.faculties=x.filter(f=>f.isActive)})}get activeTypes(){return this.types.filter(t=>t.isActive!==false)}loadFees(){this.service.all().subscribe({next:x=>this.fees=x,error:e=>this.toast.error(this.errors.message(e))})}loadTypes(){this.service.types().subscribe({next:x=>this.types=x,error:e=>this.toast.error(this.errors.message(e))})}editType(t:FeeType){this.typeEditId=t.feeTypeId;this.typeForm={name:t.name,description:t.description||''}}resetType(){this.typeEditId=null;this.typeForm={name:'',description:''}}saveType(){const b={name:this.typeForm.name,description:this.typeForm.description||null};const req=this.typeEditId?this.service.updateType(this.typeEditId,b):this.service.createType(b);req.subscribe({next:()=>{this.toast.success('Fee type saved.');this.resetType();this.loadTypes()},error:e=>this.toast.error(this.errors.message(e))})}deleteType(t:FeeType){if(!confirm(`Delete fee type ${t.name}?`))return;this.service.deleteType(t.feeTypeId).subscribe({next:()=>{this.toast.success('Fee type deleted.');this.loadTypes()},error:e=>this.toast.error(this.errors.message(e))})}assignFee(){if(!this.targetId)return;const b={studentId:this.targetType==='student'?this.targetId:null,facultyId:this.targetType==='faculty'?this.targetId:null,feeTypeId:this.assignForm.feeTypeId,amount:this.assignForm.amount,billingPeriod:this.assignForm.billingPeriod,dueDate:new Date(this.assignForm.dueDate).toISOString()};this.service.assign(b).subscribe({next:()=>{this.assignModal=false;this.toast.success('Fee assigned successfully.');this.loadFees()},error:e=>this.toast.error(this.errors.message(e))})}updateStatus(f:FeePayment,status:string){if(status===f.status)return;this.service.updateStatus(f.feePaymentId,status).subscribe({next:()=>{this.toast.success('Fee status updated.');this.loadFees()},error:e=>{this.toast.error(this.errors.message(e));this.loadFees()}})}deleteFee(f:FeePayment){if(!confirm(`Delete fee item #${f.feePaymentId}?`))return;this.service.delete(f.feePaymentId).subscribe({next:()=>{this.toast.success('Fee item deleted.');this.loadFees()},error:e=>this.toast.error(this.errors.message(e))})}}
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { FeeService } from '../../core/services/portal-services';
+import { StudentService } from '../../core/services/student.service';
+import { Faculty, FeePayment, FeeType, StudentListItem } from '../../core/models/domain.models';
+import { StatusBadgeComponent } from '../../shared/components/status-badge.component';
+import { ApiErrorService } from '../../core/services/api-error.service';
+import { ToastService } from '../../core/services/toast.service';
+
+@Component({
+  selector: 'app-fees-admin',
+  standalone: true,
+  imports: [CommonModule, FormsModule, StatusBadgeComponent],
+  template: `
+    <div class="page">
+      <div class="page-head">
+        <div><h1>Fee administration</h1><p>Maintain fee types, assign fees to students or faculties and manage payment status.</p></div>
+        <button class="btn btn-primary" (click)="assignModal=true">Assign fee</button>
+      </div>
+
+      <div class="tabs">
+        <button class="tab" [class.active]="tab==='payments'" (click)="tab='payments';loadFees()">Fee items</button>
+        <button class="tab" [class.active]="tab==='types'" (click)="tab='types'">Fee types</button>
+      </div>
+
+      @if (tab === 'payments') {
+        <div class="card">
+          <div class="row between">
+            <div><h3 class="card-title">Assigned fee items</h3><div class="card-sub">System-wide list returned by /api/fees.</div></div>
+            <button class="btn btn-secondary btn-sm" (click)="loadFees()">Refresh</button>
+          </div>
+          <div class="divider"></div>
+          <div class="table-wrap"><table class="table"><thead><tr><th>ID</th><th>Student</th><th>Fee</th><th>Period</th><th>Due</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>
+            @for (f of fees; track f.feePaymentId) {
+              <tr><td>{{f.feePaymentId}}</td><td>{{f.studentIndexNumber || f.studentId}}</td><td><strong>{{f.feeTypeName}}</strong></td><td>{{f.billingPeriod}}</td><td>{{f.dueDate|date:'mediumDate'}}</td><td>{{f.amount|currency:'LKR ':'symbol':'1.2-2'}}</td><td><app-status-badge [value]="f.status"/></td><td class="right"><div class="row" style="justify-content:flex-end"><select class="select" style="width:130px;padding:7px" [ngModel]="f.status" (ngModelChange)="updateStatus(f,$event)"><option>Outstanding</option><option>Paid</option><option>Cancelled</option><option>Waived</option></select><button class="btn btn-danger btn-sm" (click)="deleteFee(f)">Delete</button></div></td></tr>
+            }
+          </tbody></table></div>
+        </div>
+      }
+
+      @if (tab === 'types') {
+        <div class="grid grid-3">
+          <div class="card">
+            <h3 class="card-title">{{typeEditId ? 'Edit' : 'Create'}} fee type</h3>
+            <form class="stack" #tf="ngForm" (ngSubmit)="saveType()" style="margin-top:16px">
+              <div class="field"><label>Name</label><input class="input" required name="name" [(ngModel)]="typeForm.name"></div>
+              <div class="field"><label>Description</label><textarea class="textarea" name="desc" [(ngModel)]="typeForm.description"></textarea></div>
+              @if (typeEditId !== null) {
+                <label class="row" style="align-items:center;gap:10px"><input type="checkbox" name="isActive" [(ngModel)]="typeForm.isActive"> Active</label>
+              }
+              <div class="row"><button class="btn btn-primary" [disabled]="tf.invalid">Save</button>@if (typeEditId !== null) {<button type="button" class="btn btn-secondary" (click)="resetType()">Cancel</button>}</div>
+            </form>
+          </div>
+          <div class="card" style="grid-column:span 2">
+            <h3 class="card-title">Fee types</h3><div class="divider"></div>
+            <div class="table-wrap"><table class="table"><thead><tr><th>Name</th><th>Description</th><th>Status</th><th></th></tr></thead><tbody>
+              @for (t of types; track t.feeTypeId) {
+                <tr><td><strong>{{t.name}}</strong></td><td>{{t.description || '—'}}</td><td><app-status-badge [value]="t.isActive ? 'Active' : 'Inactive'"/></td><td class="right"><div class="row" style="justify-content:flex-end"><button class="btn btn-secondary btn-sm" (click)="editType(t)">Edit</button><button class="btn btn-danger btn-sm" (click)="deleteType(t)">Delete</button></div></td></tr>
+              }
+            </tbody></table></div>
+          </div>
+        </div>
+      }
+
+      @if (assignModal) {
+        <div class="modal-backdrop" (click)="assignModal=false"><div class="modal" (click)="$event.stopPropagation()">
+          <div class="modal-head"><div><h2>Assign fee</h2><div class="small muted">Choose either one student or one faculty.</div></div><button class="icon-btn" (click)="assignModal=false">×</button></div>
+          <form class="form-grid" #af="ngForm" (ngSubmit)="assignFee()">
+            <div class="field"><label>Target type</label><select class="select" name="target" [(ngModel)]="targetType" (ngModelChange)="targetId=null"><option value="student">Student</option><option value="faculty">Faculty</option></select></div>
+            <div class="field"><label>{{targetType==='student'?'Student':'Faculty'}}</label>
+              @if (targetType === 'student') {<select class="select" required name="targetId" [(ngModel)]="targetId"><option [ngValue]="null">Choose student</option>@for (s of students; track s.studentId) {<option [ngValue]="s.studentId">{{s.indexNumber}} · {{s.fullName}}</option>}</select>}
+              @else {<select class="select" required name="targetId" [(ngModel)]="targetId"><option [ngValue]="null">Choose faculty</option>@for (f of faculties; track f.facultyId) {<option [ngValue]="f.facultyId">{{f.code}} · {{f.name}}</option>}</select>}
+            </div>
+            <div class="field"><label>Fee type</label><select class="select" required name="feeType" [(ngModel)]="assignForm.feeTypeId"><option [ngValue]="null">Choose fee</option>@for (t of activeTypes; track t.feeTypeId) {<option [ngValue]="t.feeTypeId">{{t.name}}</option>}</select></div>
+            <div class="field"><label>Amount (LKR)</label><input class="input" type="number" min="0.01" step="0.01" required name="amount" [(ngModel)]="assignForm.amount"></div>
+            <div class="field"><label>Billing period</label><input class="input" required name="period" [(ngModel)]="assignForm.billingPeriod" placeholder="Semester 1 / 2026"></div>
+            <div class="field"><label>Due date</label><input class="input" type="date" required name="due" [(ngModel)]="assignForm.dueDate"></div>
+            <div class="row"><button class="btn btn-primary" [disabled]="af.invalid || !targetId">Assign fee</button><button type="button" class="btn btn-secondary" (click)="assignModal=false">Cancel</button></div>
+          </form>
+        </div></div>
+      }
+    </div>
+  `
+})
+export class FeesAdminComponent implements OnInit {
+  tab: 'payments' | 'types' = 'payments';
+  fees: FeePayment[] = [];
+  types: FeeType[] = [];
+  students: StudentListItem[] = [];
+  faculties: Faculty[] = [];
+  typeEditId: number | null = null;
+  typeForm = { name: '', description: '', isActive: true };
+  assignModal = false;
+  targetType: 'student' | 'faculty' = 'student';
+  targetId: number | null = null;
+  assignForm = { feeTypeId: null as number | null, amount: 0, billingPeriod: '', dueDate: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10) };
+
+  constructor(private service: FeeService, private studentsService: StudentService, private errors: ApiErrorService, private toast: ToastService, private cdr: ChangeDetectorRef) {}
+
+  ngOnInit() {
+    this.loadTypes(); this.loadFees();
+    this.studentsService.search('', undefined, 1).subscribe({ next: r => this.students = r.items });
+    this.studentsService.faculties().subscribe({ next: x => this.faculties = x.filter(f => f.isActive) });
+  }
+
+  get activeTypes() { return this.types.filter(t => t.isActive !== false); }
+  loadFees() { this.service.all().subscribe({ next: x => { this.fees = x; this.cdr.markForCheck(); }, error: e => { this.toast.error(this.errors.message(e)); this.cdr.markForCheck(); } }); }
+  loadTypes() { this.service.types().subscribe({ next: x => { this.types = x; this.cdr.markForCheck(); }, error: e => { this.toast.error(this.errors.message(e)); this.cdr.markForCheck(); } }); }
+  editType(t: FeeType) { this.typeEditId = t.feeTypeId; this.typeForm = { name: t.name, description: t.description || '', isActive: t.isActive }; }
+  resetType() { this.typeEditId = null; this.typeForm = { name: '', description: '', isActive: true }; }
+  saveType() {
+    const payload = this.typeEditId === null
+      ? { name: this.typeForm.name, description: this.typeForm.description || null }
+      : { name: this.typeForm.name, description: this.typeForm.description || null, isActive: this.typeForm.isActive };
+    const request = this.typeEditId === null ? this.service.createType(payload) : this.service.updateType(this.typeEditId, payload);
+    request.subscribe({ next: () => { this.toast.success('Fee type saved.'); this.resetType(); this.loadTypes(); }, error: e => this.toast.error(this.errors.message(e)) });
+  }
+  deleteType(t: FeeType) { if (!confirm(`Delete fee type ${t.name}?`)) return; this.service.deleteType(t.feeTypeId).subscribe({ next: () => { this.toast.success('Fee type deleted.'); this.loadTypes(); }, error: e => this.toast.error(this.errors.message(e)) }); }
+  assignFee() { if (!this.targetId) return; const b = { studentId: this.targetType === 'student' ? this.targetId : null, facultyId: this.targetType === 'faculty' ? this.targetId : null, feeTypeId: this.assignForm.feeTypeId, amount: this.assignForm.amount, billingPeriod: this.assignForm.billingPeriod, dueDate: new Date(this.assignForm.dueDate).toISOString() }; this.service.assign(b).subscribe({ next: () => { this.assignModal = false; this.toast.success('Fee assigned successfully.'); this.loadFees(); }, error: e => this.toast.error(this.errors.message(e)) }); }
+  updateStatus(f: FeePayment, status: string) { if (status === f.status) return; this.service.updateStatus(f.feePaymentId, status).subscribe({ next: () => { this.toast.success('Fee status updated.'); this.loadFees(); }, error: e => { this.toast.error(this.errors.message(e)); this.loadFees(); } }); }
+  deleteFee(f: FeePayment) { if (!confirm(`Delete fee item #${f.feePaymentId}?`)) return; this.service.delete(f.feePaymentId).subscribe({ next: () => { this.toast.success('Fee item deleted.'); this.loadFees(); }, error: e => this.toast.error(this.errors.message(e)) }); }
+}

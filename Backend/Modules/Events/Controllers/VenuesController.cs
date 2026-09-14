@@ -197,7 +197,7 @@ public sealed class VenuesController : ControllerBase
 
 
     // =====================================================
-    // DELETE / DEACTIVATE VENUE
+    // DELETE VENUE
     // ADMIN ONLY
     // =====================================================
     [Authorize(Roles = "Admin")]

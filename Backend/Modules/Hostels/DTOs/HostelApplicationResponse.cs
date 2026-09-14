@@ -6,6 +6,10 @@
 
         public int StudentId { get; set; }
 
+        public string StudentName { get; set; } = string.Empty;
+
+        public string StudentIndexNumber { get; set; } = string.Empty;
+
         public int PreferredHostelId { get; set; }
 
         public string? PreferredHostelName { get; set; }

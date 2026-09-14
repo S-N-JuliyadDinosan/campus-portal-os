@@ -63,6 +63,7 @@ public class FeeRepository(ApplicationDbContext context) : IFeeRepository
     {
         return await _context.FeePayments
             .Include(x => x.FeeType)
+            .Include(x => x.Student)
             .OrderByDescending(x => x.FeePaymentId)
             .ToListAsync();
     }

@@ -22,14 +22,19 @@ public interface IEventRepository
     Task<int> GetMaxActiveEventCapacityByVenueAsync(
         int venueId);
 
+    Task<bool> HasEventsForVenueAsync(
+        int venueId);
+
     Task AddAsync(
         Event eventEntity);
 
     void Update(
         Event eventEntity);
 
-    void Delete(
-        Event eventEntity);
+    // Removes the event and its event-owned records (seats and registrations).
+    // The database relationships are restrictive, so these must be removed together.
+    Task DeleteWithDependentsAsync(
+        int eventId);
 
     Task SaveChangesAsync();
 }

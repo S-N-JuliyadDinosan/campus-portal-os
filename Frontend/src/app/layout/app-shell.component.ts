@@ -252,8 +252,7 @@ export class AppShellComponent implements OnInit {
     { path: '/admin/events', label: 'Events', icon: 'calendar' },
     { path: '/admin/complaints', label: 'Complaints', icon: 'message' },
     { path: '/admin/certificates', label: 'Certificates', icon: 'certificate' },
-    { path: '/admin/fees', label: 'Fees', icon: 'wallet' },
-    { path: '/admin/settings', label: 'System Settings', icon: 'settings' }
+    { path: '/admin/fees', label: 'Fees', icon: 'wallet' }
   ];
 
   get menu(): NavigationItem[] { return this.auth.role() === 'Admin' ? this.adminMenu : this.studentMenu; }

@@ -233,7 +233,7 @@ public sealed class VenueService : IVenueService
 
 
     // =====================================================
-    // DELETE / DEACTIVATE VENUE
+    // DELETE VENUE
     // =====================================================
     public async Task DeleteAsync(
         int venueId)
@@ -249,24 +249,18 @@ public sealed class VenueService : IVenueService
         }
 
 
-        var maxActiveEventCapacity =
+        var hasEvents =
             await _eventRepository
-                .GetMaxActiveEventCapacityByVenueAsync(
+                .HasEventsForVenueAsync(
                     venueId);
 
-        if (maxActiveEventCapacity > 0)
+        if (hasEvents)
         {
             throw new InvalidOperationException(
-                "This venue cannot be deactivated because active events are assigned to it.");
+                "This venue cannot be deleted because events are still assigned to it. Delete those events first.");
         }
 
-
-        // Soft delete
-        venue.IsActive =
-            false;
-
-        _venueRepository.Update(
-            venue);
+        _venueRepository.Delete(venue);
 
         await _venueRepository
             .SaveChangesAsync();

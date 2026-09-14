@@ -13,7 +13,9 @@ public sealed class ComplaintRepository(
     public IQueryable<Complaint> Query()
     {
         return context.Complaints
-            .AsNoTracking();
+            .AsNoTracking()
+            .Include(x => x.ComplaintCategory)
+            .Include(x => x.Student);
     }
 
     public async Task<List<Complaint>> GetAllAsync()

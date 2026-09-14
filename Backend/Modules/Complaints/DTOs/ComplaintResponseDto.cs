@@ -8,6 +8,10 @@ public sealed class ComplaintResponseDto
 
     public int StudentId { get; set; }
 
+    public string StudentName { get; set; } = string.Empty;
+
+    public string StudentIndexNumber { get; set; } = string.Empty;
+
     public int ComplaintCategoryId { get; set; }
 
     public string CategoryName { get; set; } = string.Empty;

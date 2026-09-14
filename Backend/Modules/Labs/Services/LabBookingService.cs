@@ -675,6 +675,12 @@ public sealed class LabBookingService
             StudentId =
                 booking.StudentId,
 
+            StudentName =
+                booking.Student?.FullName ?? string.Empty,
+
+            StudentIndexNumber =
+                booking.Student?.IndexNumber ?? string.Empty,
+
             LabId =
                 booking.LabId,
 
