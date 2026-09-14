@@ -1,0 +1,2 @@
+export interface CertificateType { certificateTypeId:number; name:string; description?:string|null; isActive:boolean; createdAt:string; }
+export interface CertificateRequest { certificateRequestId:number; certificateTypeId:number; certificateTypeName:string; studentId:number; studentIndexNumber?:string; studentName:string; reviewedByUserId?:number|null; reason?:string|null; status:string; reviewNote?:string|null; requestedAt:string; reviewedAt?:string|null; }

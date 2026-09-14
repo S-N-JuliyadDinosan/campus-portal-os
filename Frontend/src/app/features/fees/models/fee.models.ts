@@ -1,0 +1,3 @@
+export interface FeeType { feeTypeId:number; name:string; description?:string|null; isActive:boolean; createdAt?:string; updatedAt?:string|null; }
+export interface FeePayment { feePaymentId:number; studentId:number; studentIndexNumber?:string; feeTypeId:number; feeTypeName:string; amount:number; billingPeriod:string; status:string; dueDate:string; receiptNumber?:string|null; paidAt?:string|null; paymentMethod?:string|null; paymentReference?:string|null; }
+export interface FeeReceipt { feePaymentId:number; studentId:number; feeType:string; billingPeriod:string; amount:number; receiptNumber:string; paidAt:string; paymentMethod:string; paymentReference:string; }

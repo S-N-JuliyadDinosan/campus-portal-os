@@ -1,0 +1,2 @@
+export interface ComplaintCategory { complaintCategoryId:number; name:string; description?:string|null; isActive:boolean; }
+export interface Complaint { complaintId:number; studentId:number; studentName?:string; studentIndexNumber?:string; complaintCategoryId:number; categoryName:string; description:string; status:number; resolutionNote?:string|null; resolvedAt?:string|null; statusChangedByUserId?:number|null; }

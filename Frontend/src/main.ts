@@ -4,7 +4,7 @@ import { provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
-import { authInterceptor } from './app/core/interceptors/auth.interceptor';
+import { authInterceptor } from './app/core/auth/interceptors/auth.interceptor';
 
 bootstrapApplication(AppComponent, {
   providers: [
