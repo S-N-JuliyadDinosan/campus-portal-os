@@ -52,7 +52,7 @@ import { ToastService } from '../../core/services/toast.service';
               <tbody>
                 @for (a of applications; track a.hostelApplicationId) {
                   <tr>
-                    <td>#{{ a.studentId }}</td>
+                    <td><strong>{{ a.studentName || 'Student' }}</strong><div class="small muted">{{ a.studentIndexNumber || a.studentId }}</div></td>
                     <td><strong>{{ a.preferredHostelName || ('Hostel #' + a.preferredHostelId) }}</strong></td>
                     <td>{{ a.academicYear }}<div class="small muted">{{ a.semester }}</div></td>
                     <td><app-status-badge [value]="a.status" /></td>

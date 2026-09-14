@@ -190,6 +190,8 @@ public sealed class ComplaintService(
         {
             ComplaintId = complaint.ComplaintId,
             StudentId = complaint.StudentId,
+            StudentName = complaint.Student?.FullName ?? string.Empty,
+            StudentIndexNumber = complaint.Student?.IndexNumber ?? string.Empty,
             ComplaintCategoryId =
                 complaint.ComplaintCategoryId,
             CategoryName =
@@ -207,6 +209,8 @@ public sealed class ComplaintService(
         if (complaint.IsAnonymous)
         {
             response.StudentId = 0;
+            response.StudentName = string.Empty;
+            response.StudentIndexNumber = string.Empty;
         }
 
         return response;

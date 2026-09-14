@@ -8,7 +8,7 @@ export interface AdminAccount { userId:number; email:string; isActive:boolean; e
 
 export interface Hostel { hostelId:number; name:string; location?:string|null; isActive:boolean; createdAt:string; }
 export interface Room { roomId:number; hostelId:number; roomNumber:string; capacity:number; isActive:boolean; createdAt:string; }
-export interface HostelApplication { hostelApplicationId:number; studentId:number; preferredHostelId:number; preferredHostelName?:string|null; assignedRoomId?:number|null; assignedRoomNumber?:string|null; reviewedByUserId?:number|null; status:string; academicYear:string; semester:string; requestedAt:string; reviewedAt?:string|null; }
+export interface HostelApplication { hostelApplicationId:number; studentId:number; studentName?:string; studentIndexNumber?:string; preferredHostelId:number; preferredHostelName?:string|null; assignedRoomId?:number|null; assignedRoomNumber?:string|null; reviewedByUserId?:number|null; status:string; academicYear:string; semester:string; requestedAt:string; reviewedAt?:string|null; }
 export interface HostelAvailability { hostelId:number; academicYear:string; semester:string; totalCapacity:number; occupied:number; available:number; }
 
 export interface Lab { labId:number; code:string; name:string; labType:string; capacity:number; isActive:boolean; createdAt:string; }
@@ -22,7 +22,7 @@ export interface EventSeat { eventSeatId:number; eventId:number; seatNumber:stri
 export interface EventRegistration { eventRegistrationId:number; eventId?:number; eventTitle:string; studentId?:number; studentName?:string; eventSeatId?:number|null; seatNumber?:string|null; status:number; expiresAt?:string|null; registeredAt?:string; startAt?:string; venueName?:string; }
 
 export interface ComplaintCategory { complaintCategoryId:number; name:string; description?:string|null; isActive:boolean; }
-export interface Complaint { complaintId:number; studentId:number; complaintCategoryId:number; categoryName:string; description:string; status:number; resolutionNote?:string|null; resolvedAt?:string|null; statusChangedByUserId?:number|null; }
+export interface Complaint { complaintId:number; studentId:number; studentName?:string; studentIndexNumber?:string; complaintCategoryId:number; categoryName:string; description:string; status:number; resolutionNote?:string|null; resolvedAt?:string|null; statusChangedByUserId?:number|null; }
 
 export interface CertificateType { certificateTypeId:number; name:string; description?:string|null; isActive:boolean; createdAt:string; }
 export interface CertificateRequest { certificateRequestId:number; certificateTypeId:number; certificateTypeName:string; studentId:number; studentIndexNumber?:string; studentName:string; reviewedByUserId?:number|null; reason?:string|null; status:string; reviewNote?:string|null; requestedAt:string; reviewedAt?:string|null; }
